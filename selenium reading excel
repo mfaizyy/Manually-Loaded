@@ -15,72 +15,27 @@ public class ReadingExcel {
 public static void main(String[] args) throws IOException {
 	
 		
-		String filePath = "D:\\Automation\\workspace\\Test.xlsx";
-	
-		FileInputStream file = new FileInputStream(filePath);
-		
-		XSSFWorkbook workbook = new XSSFWorkbook(file);
-		
-		XSSFSheet sheet = workbook.getSheetAt(0);
-		
-		int rowcount = sheet.getLastRowNum()-sheet.getFirstRowNum();
-		
-		int lastrowNo= sheet.getLastRowNum();
-		
-		int firstCol = sheet.getFirstRowNum();
-		
-		System.out.println(lastrowNo+" "+firstCol);
-		
-		System.out.println("The number of rows in the sheet is: " +rowcount);
-		
-		XSSFRow row;
-		
-		XSSFCell cell;
-		
-		Iterator rows = sheet.rowIterator();
-		
-		while(rows.hasNext())
-		{
-			row=(XSSFRow) rows.next();
-			
-            Iterator cells = row.cellIterator();
-            
-            while (cells.hasNext())
-            {
-                cell=(XSSFCell) cells.next();   
-                if (cell.getCellType() == XSSFCell.CELL_TYPE_STRING)
-                {
-                    System.out.print(cell.getStringCellValue()+" ");
-                }
-                else if(cell.getCellType() == XSSFCell.CELL_TYPE_NUMERIC)
-                {
-                    System.out.print(cell.getNumericCellValue()+" ");
-                }
-                else
-                {
-                }
-            }
-		}
-		
-		
-		
-		
-//		for(int i=0; i<=rowcount; i++)
+	//		while(rows.hasNext())
 //		{
-//			Row row = sheet.getRow(i);
-//			for(int j=0; j<row.getLastCellNum(); j++)
-//			{
-//				if(){
-//					
-//				}else{
-//					System.out.print((row.getCell(j).getStringCellValue()+"|| ");
-//				}
-//				System.out.print(row.getCell(j).getStringCellValue()+"|| ");
-//				
-//			}
-//			System.out.println();
-//		}
-				
-	}
+//			row=(XSSFRow) rows.next();
+//			
+//            Iterator cells = row.cellIterator();
+//            
+//            while (cells.hasNext())
+//            {
+//                cell=(XSSFCell) cells.next();   
+//                if (cell.getCellType() == XSSFCell..CELL_TYPE_STRING)
+//                {
+//                    System.out.print(cell.getStringCellValue()+" ");
+//                }
+//                else if(cell.getCellType() == XSSFCell.CELL_TYPE_NUMERIC)
+//                {
+//                    System.out.print(cell.getNumericCellValue()+" ");
+//                }
+//                else
+//                {
+//                }
+//            }
+//		}	
 
 }
