@@ -39,3 +39,50 @@ public static void main(String[] args) throws IOException {
 //		}	
 
 }
+'########################
+Option Explicit
+'########################
+
+'##################################################################################################################
+'Function Name				:    FNC_VerifyNavigationofDownloadOverviewWidget()
+'Function Description		:    This function is used to verify a) Whether the user has landed in the Download Overview widget
+'																 b) Functionality of Business Contact Dropdown
+'Input Parameters			:    None
+'Return Values				:    True/False
+'Author					: 	 Faizan
+'Created On				:	 
+'Modified By				:
+'Modified On				:
+'Comments for Modification	:
+'##################################################################################################################
+
+Function FNC_VerifyAccount_InDropdown()
+	On error resume next
+	Dim Rp_Page,accountvalue
+	FNC_VerifyAccount_InDropdown=False	
+	Set Rp_Page=Browser("ABNAMRO-RP").Page("CreditDetails") 
+	If Rp_Page.WebElement("Overboeken").Exist(5) Then
+		wait 5
+		accountvalue=RP_Page.WebElement("Selected_account").GetROProperty("innertext")
+		If Instr(1,accountvalue,Data("TP_Creditor_IBANNumber"),1)>0 Then
+			GEN_CreateScreenShot 0, Data("TP_Creditor_IBANNumber")& " Account is displaying"
+			FNC_VerifyAccount_InDropdown=True
+		Else
+			GEN_CreateScreenShot 1, Data("TP_Creditor_IBANNumber")& " Account is not displaying"
+		End If
+	Else 
+		GEN_CreateScreenShot 1, "Overboeken element not exists"
+	End If
+	Set Rp_Page=Nothing
+	If Err.Number<>0 Then
+		GEN_CreateScreenShot 1, "Failed in the validation error description is:- "& Err.Description
+		On Error Goto 0
+		ExitTestIteration	
+	ElseIf FNC_VerifyAccount_InDropdown=False Then
+		On Error Goto 0
+		GEN_CreateScreenShot 1, "FNC_VerifyAccount_InDropdown failed"
+		ExitTestIteration	
+	Else		
+		Reporter.ReportEvent micPass, "FNC_VerifyAccount_InDropdown","Executed successfully"
+	End If
+End Function
