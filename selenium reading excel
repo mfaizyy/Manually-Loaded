@@ -86,3 +86,25 @@ Function FNC_VerifyAccount_InDropdown()
 		Reporter.ReportEvent micPass, "FNC_VerifyAccount_InDropdown","Executed successfully"
 	End If
 End Function
+Dim Selectedvalue
+Set CD_Page=Browser("ABNAMRO-RP").Page("CreditDetails")
+CD_Page.highlight
+strOCA_WidgetHeader = CD_Page.WebElement("class:=panel-title ng-scope mb-0","html tag:=H2").GetROProperty("innertext")
+'msgbox strOCA_WidgetHeader
+CD_Page.WebButton("class:=ocf-tile-dropdown ocf-tile ocf-tile-interactive ocf-tile-action").Click
+Set drpList=Description.Create
+drpList("micclass").value="WebElement"
+drpList("class").value="ocf-tile-name ng-binding"
+Set contractValue=CD_Page.ChildObjects(drpList)
+msgbox contractValue.count
+For i=0 to contractValue.count-1
+	Selectedvalue= contractValue(i).getRoproperty("innertext")
+	If Selectedvalue ="FEXPU AQYXKSL" Then
+	CountryValues(i).Click	
+	End If
+'	Selectedvalue=Replace(Selectedvalue," ","")
+'	If strcomp(Selectedvalue,Trim(Data("FEXPU AQYXKSL"))) = 0 Then
+'	CountryValues(i).Click
+	Exit for
+End If
+Next
