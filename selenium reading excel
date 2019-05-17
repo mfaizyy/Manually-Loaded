@@ -56,55 +56,62 @@ Option Explicit
 'Comments for Modification	:
 '##################################################################################################################
 
+'########################
+Option Explicit
+'########################
+
+'##################################################################################################################
+'Function Name				:    FNC_VerifyAccount_InDropdown()
+'Function Description		:    This function is used to verify a) Whether the user has landed in the Credit Details Page
+'																 b) Functionality of contract Dropdown
+'Input Parameters			:    None
+'Return Values				:    True/False
+'Author						: 	 Faizan
+'Created On					:	 
+'Modified By				:
+'Modified On				:
+'Comments for Modification	:
+'##################################################################################################################
+
 Function FNC_VerifyAccount_InDropdown()
 	On error resume next
-	Dim Rp_Page,accountvalue
-	FNC_VerifyAccount_InDropdown=False	
-	Set Rp_Page=Browser("ABNAMRO-RP").Page("CreditDetails") 
-	If Rp_Page.WebElement("Overboeken").Exist(5) Then
-		wait 5
-		accountvalue=RP_Page.WebElement("Selected_account").GetROProperty("innertext")
-		If Instr(1,accountvalue,Data("TP_Creditor_IBANNumber"),1)>0 Then
-			GEN_CreateScreenShot 0, Data("TP_Creditor_IBANNumber")& " Account is displaying"
-			FNC_VerifyAccount_InDropdown=True
-		Else
-			GEN_CreateScreenShot 1, Data("TP_Creditor_IBANNumber")& " Account is not displaying"
-		End If
-	Else 
-		GEN_CreateScreenShot 1, "Overboeken element not exists"
-	End If
-	Set Rp_Page=Nothing
+	FNC_VerifyAccount_InDropdown = False
+	Dim Selectedvalue
+	Set CD_Page=Browser("ABNAMRO-RP").Page("CreditDetails")
+	CD_Page.highlight
+	strOCA_WidgetHeader = CD_Page.WebElement("class:=panel-title ng-scope mb-0","html tag:=H2").GetROProperty("innertext")
+	Select Case strOCA_WidgetHeader
+		Case "Zelf regelen"
+			GEN_CreateScreenShot 0, "User is navigated to the credit details page"
+			CD_Page.WebButton("class:=ocf-tile-dropdown ocf-tile ocf-tile-interactive ocf-tile-action").Click
+			Set drpList = Description.Create
+			drpList("micclass").value="WebElement"
+			drpList("class").value="ng-binding ng-scope"
+			drpList("html tag").value="SPAN"
+			
+			Set contractValue=CD_Page.ChildObjects(drpList)
+			msgbox contractValue.count-1
+			For i = 0 To contractValue.count-1
+				Selectedvalue= contractValue(i).getRoproperty("innertext")
+				'Selectedvalue=Replace(Selectedvalue," ","")
+				msgbox Selectedvalue
+				If strcomp(Selectedvalue,"NFFHECP NS") = 0 Then
+					contractValue(i).click	
+					GEN_CreateScreenShot 0, "Specified contract has been selected"
+					FNC_VerifyAccount_InDropdown = True
+				End If
+			Next
+	End Select
+	Set CD_Page = Nothing
 	If Err.Number<>0 Then
 		GEN_CreateScreenShot 1, "Failed in the validation error description is:- "& Err.Description
 		On Error Goto 0
 		ExitTestIteration	
 	ElseIf FNC_VerifyAccount_InDropdown=False Then
 		On Error Goto 0
-		GEN_CreateScreenShot 1, "FNC_VerifyAccount_InDropdown failed"
+		Reporter.ReportEvent micFail, "FNC_VerifyAccount_InDropdown","NOT Executed successfully"
 		ExitTestIteration	
 	Else		
 		Reporter.ReportEvent micPass, "FNC_VerifyAccount_InDropdown","Executed successfully"
-	End If
+	End If	
 End Function
-Dim Selectedvalue
-Set CD_Page=Browser("ABNAMRO-RP").Page("CreditDetails")
-CD_Page.highlight
-strOCA_WidgetHeader = CD_Page.WebElement("class:=panel-title ng-scope mb-0","html tag:=H2").GetROProperty("innertext")
-'msgbox strOCA_WidgetHeader
-CD_Page.WebButton("class:=ocf-tile-dropdown ocf-tile ocf-tile-interactive ocf-tile-action").Click
-Set drpList=Description.Create
-drpList("micclass").value="WebElement"
-drpList("class").value="ocf-tile-name ng-binding"
-Set contractValue=CD_Page.ChildObjects(drpList)
-msgbox contractValue.count
-For i=0 to contractValue.count-1
-	Selectedvalue= contractValue(i).getRoproperty("innertext")
-	If Selectedvalue ="FEXPU AQYXKSL" Then
-	CountryValues(i).Click	
-	End If
-'	Selectedvalue=Replace(Selectedvalue," ","")
-'	If strcomp(Selectedvalue,Trim(Data("FEXPU AQYXKSL"))) = 0 Then
-'	CountryValues(i).Click
-	Exit for
-End If
-Next
